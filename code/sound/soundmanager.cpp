@@ -809,6 +809,63 @@ void SoundManager::DuckForInGameCredits()
 //=============================================================================
 void SoundManager::LoadSoundFile( const char* filename, SoundFileHandler* callbackObj )
 {
+char fileExtension[4];
+    int length = strlen( filename );
+
+    printf("DEBUG SOUND: Requesting to load %s\n", filename);
+
+    // Determine the appropriate sound subsystem by the file extension
+    rAssert( length > 4 );
+    if( filename[length - 4] == '.' )
+    {
+        strcpy( fileExtension, &(filename[strlen(filename) - 3]) );
+        
+        if( strcmp( fileExtension, RADMUSIC_SCRIPT_FILE ) == 0 )
+        {
+            printf("DEBUG SOUND: Entering Music Player Load...\n");
+            m_musicPlayer->LoadRadmusicScript( filename, callbackObj );
+            printf("DEBUG SOUND: Exited Music Player Load.\n");
+        }
+#ifdef AUDIO_ENABLE_SCRIPTING
+        else if( strcmp( fileExtension, RADSCRIPT_TYPE_INFO_FILE ) == 0 )
+        {
+            printf("DEBUG SOUND: Entering Type Info Load...\n");
+            m_pSoundRenderMgr->LoadTypeInfoFile( filename, callbackObj );
+        }
+        else if( strcmp( fileExtension, RADSCRIPT_SCRIPT_FILE ) == 0 )
+        {
+            printf("DEBUG SOUND: Entering Script File Load...\n");
+            m_pSoundRenderMgr->LoadScriptFile( filename, callbackObj );
+        }
+#endif
+        else
+        {
+            //LINUX FIX
+            printf("DEBUG SOUND: WARNING! Unrecognized file type [%s]\n", filename);
+            
+            if ( callbackObj != NULL )
+            {
+                callbackObj->LoadCompleted();
+            }
+        }
+    }
+    else
+    {
+        printf("DEBUG SOUND: Entering Cluster Load...\n");
+        if( m_soundLoader->LoadClusterByName( filename, callbackObj ) )
+        {
+            printf("DEBUG SOUND: Cluster already loaded, firing callback.\n");
+            callbackObj->LoadCompleted();
+        }
+    }
+/*// HACK
+    if( callbackObj != NULL )
+    {
+        callbackObj->LoadCompleted();
+    }
+    return; 
+*/
+ /* DEBUG DEBUG DEBUG COMMENT
     char fileExtension[4];
     int length = strlen( filename );
 
@@ -856,6 +913,7 @@ void SoundManager::LoadSoundFile( const char* filename, SoundFileHandler* callba
             callbackObj->LoadCompleted();
         }
     }
+*/ 
 }
 
 //=============================================================================

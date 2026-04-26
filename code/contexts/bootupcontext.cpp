@@ -134,6 +134,10 @@ BootupContext* BootupContext::GetInstance()
 //=============================================================================
 void BootupContext::StartMovies()
 {
+    printf("DEBUG: Skipping movies to avoid radMoviePlayer crash...\n");
+    GetGameFlow()->SetContext( CONTEXT_FRONTEND );
+    return;
+/*
 #ifndef FINAL
     if( CommandLineOptions::Get( CLO_SKIP_FE ) )
     {
@@ -225,13 +229,15 @@ void BootupContext::StartMovies()
         GetGameFlow()->SetContext( CONTEXT_FRONTEND );
 #endif
     }
+*/
 }
 
 void
 BootupContext::StartLoadingSound()
 {
+    printf("DEBUG: Calling SoundManager::OnBootupStart()\n");
     GetSoundManager()->OnBootupStart();
-
+    printf("DEBUG: Adding Sound Callback to LoadingManager\n");
     GetLoadingManager()->AddCallback( this, (void*)GetSoundManager() );
 }
 
@@ -393,8 +399,16 @@ void BootupContext::OnStop( ContextEnum nextContext )
 //==============================================================================
 void BootupContext::OnUpdate( unsigned int elapsedTime )
 {
+    //static int timerCount = 0;
+    //if (timerCount++ % 60 == 0) {
+        //printf("DEBUG: Time=%d, BootLoad=%d, SoundLoad=%d, Busy=%d\n", 
+          //      m_elapsedTime, m_bootupLoadCompleted, m_soundLoadCompleted, 
+            //    GetLoadingManager()->IsLoading());
+    //}
     if( m_elapsedTime != -1 )
     {
+        //if( m_elapsedTime > MINIMUM_LICENSE_SCREEN_DISPLAY_TIME &&
+          //  m_bootupLoadCompleted )
         if( m_elapsedTime > MINIMUM_LICENSE_SCREEN_DISPLAY_TIME &&
             m_bootupLoadCompleted && m_soundLoadCompleted )
         {

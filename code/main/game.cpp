@@ -26,7 +26,7 @@
 // Pure3D
 #include <p3d/loadmanager.hpp>
 #include <p3d/utility.hpp>
-
+#include <loading/loadingmanager.h>
 #ifdef RAD_WIN32
 #include <SDL.h>  // for SDL_PollEvent...
 #endif
@@ -541,6 +541,9 @@ void Game::Run()
             DEMOPROFILE( g_DemoProfiler.Start(PROFILE_CHANNEL_AI); )
             mpTimerList->Service(); //nv
             mpGameFlow->OnTimerDone(elapsed, NULL);
+
+            //printf("DEBUG TIMER: elapsed %u, newTime %u\n", elapsed, newTime);
+
             DEMOPROFILE( g_DemoProfiler.Stop(PROFILE_CHANNEL_AI); )
 
             if( !mExitNow )
@@ -598,6 +601,10 @@ void Game::Run()
         p3d::loadManager->SwitchTask();
         DEMOPROFILE( g_DemoProfiler.Stop(PROFILE_CHANNEL_LOAD); )
 
+        printf("Loader Loading: %d, GameContext: %d\n", 
+        GetLoadingManager()->IsLoading(), 
+        mpGameFlow->GetCurrentContext());
+        //radThreadSleep(1); 
         ++mFrameCount;
 
         DEMOPROFILE( g_DemoProfiler.Stop(PROFILE_CHANNEL_ALL); )

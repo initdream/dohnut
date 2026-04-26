@@ -92,11 +92,10 @@ radThreadMutex::radThreadMutex( void )
     m_ReferenceCount( 1 )
 { 
     radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radThreadMutex" );
-#if SDL_MAJOR_VERSION < 3
-    m_Mutex = (SDL_Mutex*)SDL_CreateMutex();
-#else
-    m_Mutex = SDL_CreateMutex();
-#endif
+
+    // We use a double-cast to satisfy the compiler regardless of 
+    // whether m_Mutex is defined as SDL_mutex* or SDL_Mutex*
+    m_Mutex = (SDL_Mutex*)(void*)SDL_CreateMutex();
 }
 
 //=============================================================================
@@ -114,11 +113,7 @@ radThreadMutex::radThreadMutex( void )
 
 radThreadMutex::~radThreadMutex( void )
 {
-#if SDL_MAJOR_VERSION < 3
-    SDL_DestroyMutex((SDL_mutex*)m_Mutex);
-#else
-    SDL_DestroyMutex(m_Mutex);
-#endif
+    SDL_DestroyMutex((SDL_mutex*)(void*)m_Mutex);
 }
 
 //=============================================================================
@@ -137,11 +132,8 @@ radThreadMutex::~radThreadMutex( void )
 
 void radThreadMutex::Lock( void )
 {
-#if SDL_MAJOR_VERSION < 3
-    SDL_LockMutex((SDL_mutex*)m_Mutex);
-#else
-    SDL_LockMutex(m_Mutex);
-#endif
+    SDL_LockMutex((SDL_mutex*)(void*)m_Mutex);
+    //printf("MUTEX: Thread %lu acquired lock [%p]\n", tid, this);
 }
 
 //=============================================================================
@@ -158,11 +150,8 @@ void radThreadMutex::Lock( void )
 
 void radThreadMutex::Unlock( void )
 {
-#if SDL_MAJOR_VERSION < 3
-    SDL_UnlockMutex((SDL_mutex*)m_Mutex);
-#else
-    SDL_UnlockMutex(m_Mutex);
-#endif
+    //printf("MUTEX: Thread %lu releasing lock [%p]\n", SDL_ThreadID(), this);
+    SDL_UnlockMutex((SDL_mutex*)(void*)m_Mutex);
 }
 
 //=============================================================================

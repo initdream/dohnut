@@ -835,6 +835,22 @@ bool Win32Platform::OnDriveError( radFileError error, const char* pDriveName, vo
         }
     case FileNotFound:
         {
+                radFileRequest* request = static_cast<radFileRequest*>( pUserData );
+                const char* fileName = request->GetFilename(); 
+
+                char errorString[512];
+                // Show the raw fileName so you can see if it's prepending anything weird
+                sprintf( errorString, "File Not Found:\n%s", fileName );
+
+                fprintf(stderr, "ERROR: %s\n", errorString);
+                DisplaySplashScreen( Error, errorString, 0.7f, 0.0f, 0.0f, tColour(255, 255, 255), 0 );
+
+                mErrorState = P_ERROR;
+                mPauseForError = true;
+                return true;
+        }
+        
+        /*{
             rAssert( pUserData != NULL );
 
             radFileRequest* request = static_cast<radFileRequest*>( pUserData );
@@ -845,7 +861,7 @@ bool Win32Platform::OnDriveError( radFileError error, const char* pDriveName, vo
             unsigned int lastIndex = 0;
             for ( i = 0; i < strlen( fileName ); ++i )
             {
-                if ( fileName[ i ] == '\\' )
+                if ( fileName[ i ] == '/' || fileName[ i ] == '\\' )
                 {
                     lastIndex = i;
                 }
@@ -853,7 +869,7 @@ bool Win32Platform::OnDriveError( radFileError error, const char* pDriveName, vo
 
             unsigned int adjustedIndex = lastIndex == 0 ? lastIndex : lastIndex + 1;
 
-            char adjustedName[32];
+            char adjustedName[256];
             strncpy( adjustedName, &fileName[adjustedIndex], ( strlen( fileName ) - lastIndex ) );
             adjustedName[ strlen( fileName ) - lastIndex ] = '\0';
 
@@ -871,8 +887,7 @@ bool Win32Platform::OnDriveError( radFileError error, const char* pDriveName, vo
             mErrorState = P_ERROR;
             mPauseForError = true;
 
-            return true;
-        }
+            return true;*/
     case NoMedia:
     case MediaNotFormatted:
     case MediaCorrupt:

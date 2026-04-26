@@ -290,6 +290,7 @@ void LoadingManager::AddRequest
 //==============================================================================
 void LoadingManager::OnLoadFileComplete( void* pUserData )
 {
+    printf("DEBUG: OnLoadFileComplete for request at %p\n", pUserData);
     // Display some debug info.
     LoadingRequest& request = mRequests[mRequestHead ];
     rAssert( pUserData == &request );
@@ -641,6 +642,7 @@ void LoadingManager::ProcessNextRequest()
                 request.pCallback->OnProcessRequestsComplete(request.pUserData);
                 ProcessNextRequest();
             }
+            radThreadSleep(1);
         }
     }
 }

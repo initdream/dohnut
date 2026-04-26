@@ -71,8 +71,9 @@ void PlatformDrivesGetDefaultDrive( char* driveSpec )
 #elif defined RAD_VITA
     strcpy(driveSpec, "UX0:");
 #else
-    strcpy(driveSpec, "/");
-#endif // RAD_WIN32
+    // Change this from "/" to ""
+    strcpy(driveSpec, "./"); 
+#endif
 }
 
 //=============================================================================
@@ -188,7 +189,8 @@ bool PlatformDrivesValidateDriveName( const char* driveSpec )
 #elif defined __SWITCH__
     return strcmp( driveSpec, "/" ) == 0 || strcmp( driveSpec, "ROMFS:" ) == 0;
 #else
-    return strcmp(driveSpec, "/") == 0;
+    // Change this to match the empty string
+    return strcmp(driveSpec, "./") == 0;
 #endif
 }
 

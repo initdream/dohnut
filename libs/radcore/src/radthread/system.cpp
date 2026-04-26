@@ -72,6 +72,10 @@ static SDL_Mutex* g_ExclusionObject = nullptr;
 
 void radThreadInitialize( unsigned int milliseconds )
 {
+    SDL_version linked;
+    SDL_GetVersion(&linked);
+    printf("COMPILED WITH SDL VERSION: %d.%d.%d\n", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
+    printf("LINKED WITH SDL VERSION: %d.%d.%d\n", linked.major, linked.minor, linked.patch);
     rAssertMsg( !g_SystemInitialized, "radThread system already initialized\n");
 
     //

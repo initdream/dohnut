@@ -225,9 +225,8 @@ const char* PROJECT_FILE_MINIGAME = PROJECT_DRIVE_SPEC "art\\frontend\\scrooby\\
 const char* PROJECT_FILE_INGAME = PROJECT_DRIVE_SPEC "art\\frontend\\scrooby\\ingame.p3d";
 
 #define LICENSE_SCREEN_IMAGE_DIR "art\\frontend\\dynaload\\images\\license\\"
-#ifdef RAD_PC
 #define MOUSE_CURSOR_DIR "art\\frontend\\dynaload\\images\\"
-#endif
+
 
 const char* INGAME_LEVEL_PROJECT_FILES[] = 
 {
@@ -1260,34 +1259,19 @@ void CGuiSystem::OnInitBootUp()
 
     char licenseImageFile[ 256 ];
     sprintf( licenseImageFile,
-#ifdef RAD_GAMECUBE
-             "%s%slicenseG.p3d",
-#endif
-#ifdef RAD_PS2
-             "%s%slicenseP.p3d",
-#endif
-#ifdef RAD_XBOX
-             "%s%slicenseX.p3d",
-#endif
-#ifdef RAD_WIN32
-#ifdef PAL
-             "%s%slicenseP.p3d",
-#else
-             "%s%slicensePC.p3d",
-#endif
-#endif
-             LICENSE_SCREEN_IMAGE_DIR,
-             languageDir );
+         "%s%slicensePC.p3d",
+         LICENSE_SCREEN_IMAGE_DIR,
+         languageDir );
 
-#ifdef RAD_PC
+/*
     //Load the mouse cursor
     GetLoadingManager()->AddRequest( FILEHANDLER_PURE3D,
                                      MOUSE_CURSOR_DIR "mouse_cursor.p3d",
                                      GMA_PERSISTENT,
                                      "Default",
                                      "Default" );
-#endif
 
+   */
     GetLoadingManager()->AddRequest( FILEHANDLER_PURE3D,
                                      licenseImageFile,
                                      GMA_LEVEL_FE,

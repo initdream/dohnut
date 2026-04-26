@@ -126,8 +126,48 @@ MEMTRACK_PUSH_GROUP( "CGuiScreenPauseSettings" );
     // Add menu items
     //
     char itemName[ 32 ];
-
     for( int i = 0; i < NUM_PAUSE_SETTINGS_MENU_ITEMS; i++ )
+    {
+        Scrooby::Group* group = pPage->GetGroup( PAUSE_SETTINGS_MENU_ITEMS[ i ] );
+        
+        //LINUX FIX
+        //something to do with vibration
+
+        if ( group == NULL ) 
+        {
+            printf("WARNING UI: Missing UI Group [%s]. Skipping.\n", PAUSE_SETTINGS_MENU_ITEMS[ i ]);
+            continue; 
+        }
+
+
+        Scrooby::Text* pText = group->GetText( PAUSE_SETTINGS_MENU_ITEMS[ i ] );
+        if ( pText != NULL )
+        {
+            pText->SetTextMode( Scrooby::TEXT_WRAP );
+        }
+
+        sprintf( itemName, "%s_Value", PAUSE_SETTINGS_MENU_ITEMS[ i ] );
+        Scrooby::Text* pTextValue = group->GetText( itemName );
+        if ( pTextValue != NULL )
+        {
+            pTextValue->SetTextMode( Scrooby::TEXT_WRAP );
+        }
+
+        sprintf( itemName, "%s_LArrow", PAUSE_SETTINGS_MENU_ITEMS[ i ] );
+        Scrooby::Sprite* pLArrow = group->GetSprite( itemName );
+
+        sprintf( itemName, "%s_RArrow", PAUSE_SETTINGS_MENU_ITEMS[ i ] );
+        Scrooby::Sprite* pRArrow = group->GetSprite( itemName );
+
+        m_pMenu->AddMenuItem( pText,
+                              pTextValue,
+                              NULL,
+                              NULL,
+                              pLArrow,
+                              pRArrow,
+                              SELECTION_ENABLED | VALUES_WRAPPED | TEXT_OUTLINE_ENABLED );
+    }
+    /*for( int i = 0; i < NUM_PAUSE_SETTINGS_MENU_ITEMS; i++ )
     {
         Scrooby::Group* group = pPage->GetGroup( PAUSE_SETTINGS_MENU_ITEMS[ i ] );
         rAssert( group != NULL );
@@ -155,6 +195,7 @@ MEMTRACK_PUSH_GROUP( "CGuiScreenPauseSettings" );
                               pRArrow,
                               SELECTION_ENABLED | VALUES_WRAPPED | TEXT_OUTLINE_ENABLED );
     }
+    */
 
 #ifdef RAD_GAMECUBE
     // change "Vibration" text to "Rumble"

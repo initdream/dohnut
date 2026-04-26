@@ -19,7 +19,7 @@
 //=============================================================================
 // Include Files
 //=============================================================================
-
+#include <unistd.h>
 #include "pch.hpp"
 #include <ctype.h>
 #include <raddebug.hpp>
@@ -313,9 +313,9 @@ void radFileSystem::ProcessFileName
     //
     while( *p && simpleName==false)
     {
-        if( *p == '/' )
+        if( *p == '\\' )
         {
-            *p = '\\';
+            *p = '/';
         }
         p++;
     }
@@ -370,7 +370,7 @@ void radFileSystem::FileOpen
     char driveSpec[ radFileDrivenameMax + 1 ];
     char* filePart = NULL;
     ProcessFileName( pFileName, fullFilename, driveSpec, &filePart );
-
+    rDebugPrintf("FILE SYSTEM: Opening [%s] on Drive [%s]. Full path: [%s]\n", pFileName, driveSpec, fullFilename);
     Lock( );
 
     //
@@ -425,7 +425,10 @@ void radFileSystem::FileOpen
             alloc,
             cacheSpace
         );
-
+    char cwd[1024];
+    getcwd(cwd, sizeof(cwd));
+    printf("DEBUG: CWD is [%s]\n", cwd);
+    printf("DEBUG: Full path passed to OS is [%s]\n", fullFilename);
     Unlock( );
 }
 

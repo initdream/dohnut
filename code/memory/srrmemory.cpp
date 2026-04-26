@@ -178,141 +178,54 @@ inline void* AllocateThis( GameMemoryAllocator allocator, size_t size )
 // Return:      
 //
 //==============================================================================
+//==============================================================================
+// Standard new & delete overrides (Patched for modern Linux)
+//==============================================================================
 void* operator new( size_t size )
-#ifdef RAD_PS2
-#ifndef RAD_MW
-throw( std::bad_alloc )
-#endif
-#endif
 {
-    if( gMemorySystemInitialized == false )
-    {
-        INIT_MEM();
-    }
+    if( gMemorySystemInitialized == false ) return malloc(size);
 
     void* pMemory;
-
-    if (g_NoHeapRoute)
-    {
+    if (g_NoHeapRoute) {
         pMemory = radMemoryAlloc( 0, size );
-    }
-    else
-    {
+    } else {
         GameMemoryAllocator curr = HeapMgr()->GetCurrentHeap();
         pMemory = AllocateThis( curr, size );
-
 #ifdef MEMORYTRACKER_ENABLED
         ::radMemoryMonitorIdentifyAllocation (pMemory, HeapMgr()->GetCurrentGroupID ());
 #endif
     }
-
-
-    //MEMTRACK_ALLOC( pMemory, size, 0 );
-
     return( pMemory );
 }
 
-
-//==============================================================================
-// delete
-//==============================================================================
-//
-// Description: regular delete
-//
-// Parameters:  pMemory - pointer to the memory we're deleting
-//
-// Return:      
-//
-//==============================================================================
-void operator delete(void* pMemory)
-#ifdef RAD_PS2
-#ifndef RAD_MW
-throw()
-#endif
-#endif
+void operator delete(void* pMemory) noexcept
 {
+    if( gMemorySystemInitialized == false ) { free(pMemory); return; }
     radMemoryFree( pMemory );
 }
 
-
-//==============================================================================
-// 
-//==============================================================================
-//
-// Description: 
-//
-// Parameters:  
-//
-// Return:      
-//
-//==============================================================================
 void* operator new[]( size_t size )
-#ifdef RAD_PS2
-#ifndef RAD_MW
-throw( std::bad_alloc )
-#endif
-#endif
 {
-    if( gMemorySystemInitialized == false )
-    {
-        INIT_MEM();
-    }
+    if( gMemorySystemInitialized == false ) return malloc(size);
 
     void* pMemory;
-
-    if (g_NoHeapRoute)
-    {
+    if (g_NoHeapRoute) {
         pMemory = radMemoryAlloc( 0, size );
-    }
-    else
-    {
+    } else {
         GameMemoryAllocator curr = HeapMgr()->GetCurrentHeap();
         pMemory = AllocateThis( curr, size );
-
 #ifdef MEMORYTRACKER_ENABLED
         ::radMemoryMonitorIdentifyAllocation (pMemory, HeapMgr()->GetCurrentGroupID ());
 #endif
     }
-
-    //MEMTRACK_ALLOC( pMemory, size, ALLOC_ARRAY );
-
     return( pMemory );
 }
 
-
-//==============================================================================
-// 
-//==============================================================================
-//
-// Description: 
-//
-// Parameters:  
-//
-// Return:      
-//
-//==============================================================================
-void operator delete[]( void* pMemory )
-#ifdef RAD_PS2
-#ifndef RAD_MW
-throw()
-#endif
-#endif
+void operator delete[]( void* pMemory ) noexcept
 {
+    if( gMemorySystemInitialized == false ) { free(pMemory); return; }
     radMemoryFree( pMemory );
 }
-
-
-//==============================================================================
-// 
-//==============================================================================
-//
-// Description: 
-//
-// Parameters:  
-//
-// Return:      
-//
-//==============================================================================
 void* operator new( size_t size, GameMemoryAllocator allocator )
 {
     if( gMemorySystemInitialized == false )
