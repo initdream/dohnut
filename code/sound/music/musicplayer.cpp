@@ -54,9 +54,9 @@
 //
 //******************************************************************************
 
-static const char* AMBIENT_FILE_NAME = "sound\\ambience\\ambience.rmv";
+static const char* AMBIENT_FILE_NAME = "sound\\ambience\\ambience.rms";
 static const char* LEVEL_FILE_NAME_PREFIX = "sound\\music\\L";
-static const char* LEVEL_FILE_NAME_SUFFIX = "_music.rmv";
+static const char* LEVEL_FILE_NAME_SUFFIX = "_music.rms";
 static const char* MUSIC_SEARCH_PATH      = "sound\\music\\";
 static const char* AMBIENCE_SEARCH_PATH   = "sound\\ambience\\";
 
