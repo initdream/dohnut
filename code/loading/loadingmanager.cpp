@@ -290,7 +290,9 @@ void LoadingManager::AddRequest
 //==============================================================================
 void LoadingManager::OnLoadFileComplete( void* pUserData )
 {
+#ifdef RAD_DEBUG
     printf("DEBUG: OnLoadFileComplete for request at %p\n", pUserData);
+#endif
     // Display some debug info.
     LoadingRequest& request = mRequests[mRequestHead ];
     rAssert( pUserData == &request );

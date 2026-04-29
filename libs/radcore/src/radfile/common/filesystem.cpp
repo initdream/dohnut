@@ -427,8 +427,10 @@ void radFileSystem::FileOpen
         );
     char cwd[1024];
     getcwd(cwd, sizeof(cwd));
+#ifdef RAD_DEBUG
     printf("DEBUG: CWD is [%s]\n", cwd);
     printf("DEBUG: Full path passed to OS is [%s]\n", fullFilename);
+#endif
     Unlock( );
 }
 

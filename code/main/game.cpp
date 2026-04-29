@@ -600,10 +600,11 @@ void Game::Run()
         DEMOPROFILE( g_DemoProfiler.Start(PROFILE_CHANNEL_LOAD); )
         p3d::loadManager->SwitchTask();
         DEMOPROFILE( g_DemoProfiler.Stop(PROFILE_CHANNEL_LOAD); )
-
+#ifdef RAD_DEBUG
         printf("Loader Loading: %d, GameContext: %d\n", 
         GetLoadingManager()->IsLoading(), 
         mpGameFlow->GetCurrentContext());
+#endif
         //radThreadSleep(1); 
         ++mFrameCount;
 

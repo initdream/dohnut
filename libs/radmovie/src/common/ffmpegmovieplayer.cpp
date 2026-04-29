@@ -201,7 +201,11 @@ void radMoviePlayer::Load( const char * pVideoFileName, unsigned int audioTrackI
     AV_CHK( avformat_open_input( &m_pFormatCtx, pVideoFileName, NULL, NULL ) );
     AV_CHK( avformat_find_stream_info( m_pFormatCtx, NULL ) );
 
+#ifdef RAD_FFMPEG_NEW_API
     const AVCodec* pVideoCodec = NULL;
+#else
+    AVCodec* pVideoCodec = NULL;
+#endif
     m_VideoTrackIndex = av_find_best_stream( m_pFormatCtx, AVMEDIA_TYPE_VIDEO, -1, -1, &pVideoCodec, 0 );
     AVCodecParameters* pVideoParams = m_pFormatCtx->streams[m_VideoTrackIndex]->codecpar;
     m_pVideoCtx = avcodec_alloc_context3( pVideoCodec );
@@ -220,15 +224,20 @@ void radMoviePlayer::Load( const char * pVideoFileName, unsigned int audioTrackI
     );
 #endif
 
-    if( audioTrackIndex != radMovie_NoAudioTrack )
+if( audioTrackIndex != radMovie_NoAudioTrack )
     {
+#ifdef RAD_FFMPEG_NEW_API
         const AVCodec* pAudioCodec = NULL;
+#else
+        AVCodec* pAudioCodec = NULL;
+#endif
         m_AudioTrackIndex = av_find_best_stream( m_pFormatCtx, AVMEDIA_TYPE_AUDIO, audioTrackIndex + 1, -1, &pAudioCodec, 0 );
         AVCodecParameters* pAudioParams = m_pFormatCtx->streams[m_AudioTrackIndex]->codecpar;
         m_pAudioCtx = avcodec_alloc_context3( pAudioCodec );
         AV_CHK( avcodec_parameters_to_context( m_pAudioCtx, pAudioParams ) );
         AV_CHK( avcodec_open2( m_pAudioCtx, pAudioCodec, NULL ) );
 
+#ifdef RAD_FFMPEG_NEW_API
         AVChannelLayout layout = { AV_CHANNEL_ORDER_NATIVE, 2, AV_CH_LAYOUT_STEREO };
         AV_CHK( swr_alloc_set_opts2( &m_pSwrCtx,
             &layout,
@@ -240,6 +249,17 @@ void radMoviePlayer::Load( const char * pVideoFileName, unsigned int audioTrackI
             0,
             NULL ) );
         swr_init( m_pSwrCtx );
+#else
+        m_pSwrCtx = swr_alloc_set_opts( m_pSwrCtx,
+             AV_CH_LAYOUT_STEREO,
+             AV_SAMPLE_FMT_S16,
+             44100,
+             pAudioParams->channel_layout,      
+             (AVSampleFormat)pAudioParams->format,
+             pAudioParams->sample_rate,
+             0, nullptr );
+        AV_CHK( swr_init( m_pSwrCtx ) );
+#endif
     }
     else
     {
@@ -504,7 +524,11 @@ void radMoviePlayer::Service( void )
                             {
                                 AVRational rational = m_pFormatCtx->streams[0]->time_base;
                                 m_PresentationTime = (m_pVideoFrame->pts * rational.num * 1000) / rational.den;
+#ifdef RAD_FFMPEG_NEW_API
                                 m_PresentationDuration = (m_pVideoFrame->duration * rational.num * 1000) / rational.den;
+#else
+                                m_PresentationDuration = (m_pVideoFrame->pkt_duration * rational.num * 1000) / rational.den;
+#endif
                                 m_VideoFrameState = VideoFrame_Locked;
                             }
 
@@ -534,7 +558,11 @@ void radMoviePlayer::Service( void )
                         // TODO: Add buffer queuing support to radsound and move this code to that module.
                         ALuint buffer;
                         alGenBuffers( 1, &buffer );
+#ifdef RAD_FFMPEG_NEW_API
                         alBufferData( buffer, AL_FORMAT_STEREO16, output, bufferSize, m_pAudioFrame->sample_rate );
+#else
+                        alBufferData( buffer, AL_FORMAT_STEREO16, output, bufferSize, 44100 );
+#endif
                         alSourceQueueBuffers( m_AudioSource, 1, &buffer );
                         av_freep( &output );
                     }

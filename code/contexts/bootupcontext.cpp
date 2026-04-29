@@ -235,9 +235,13 @@ void BootupContext::StartMovies()
 void
 BootupContext::StartLoadingSound()
 {
+#ifdef RAD_DEBUG
     printf("DEBUG: Calling SoundManager::OnBootupStart()\n");
+#endif
     GetSoundManager()->OnBootupStart();
+#ifdef RAD_DEBUG
     printf("DEBUG: Adding Sound Callback to LoadingManager\n");
+#endif
     GetLoadingManager()->AddCallback( this, (void*)GetSoundManager() );
 }
 
