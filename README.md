@@ -38,3 +38,9 @@ cmake ..
 make -j$(nproc)
 ```
 The resulting binary will be located in `build/code/`.
+
+# tools
+
+Due to the way the filesystem was rewritten, there is a need to use the utility from the folder tools/, it extracts sounds necessary for the game to work.
+
+Copy all the files to your game's root folder and run the extract_n_move.sh utility, it will compile a binary and rename the files, matching them with what the game expects.
