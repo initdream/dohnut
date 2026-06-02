@@ -33,7 +33,8 @@
 //============================================================================
 
 struct IRadNameSpace;
-
+template<> IRadNameSpace* radLinkedClass< IRadNameSpace >::s_pLinkedClassHead;
+template<> IRadNameSpace* radLinkedClass< IRadNameSpace >::s_pLinkedClassTail;
 //============================================================================
 // Factories and functions
 //============================================================================
