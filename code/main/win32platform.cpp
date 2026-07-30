@@ -1,7 +1,7 @@
 //===========================================================================
 // Copyright (C) 2002 Radical Entertainment Ltd.  All rights reserved.
 //
-// Component:   Win32Platform   
+// Component:   Win32Platform
 //
 // Description: Abstracts the differences for setting up and shutting down
 //              the different platforms.
@@ -152,7 +152,7 @@ void* Win32Platform::mhMutex = NULL;
 bool Win32Platform::mShowCursor = true;
 
 //The Adlib font.  <sigh>
-unsigned char gFont[] = 
+unsigned char gFont[] =
 #include <font/defaultfont.h>
 
 //
@@ -209,12 +209,12 @@ void LoadMemP3DFile( unsigned char* buffer, unsigned int size, tEntityStore* sto
 //==============================================================================
 Win32Platform* Win32Platform::CreateInstance()
 {
-MEMTRACK_PUSH_GROUP( "Win32Platform" );
+    MEMTRACK_PUSH_GROUP( "Win32Platform" );
     rAssert( spInstance == NULL );
 
     spInstance = new(GMA_PERSISTENT) Win32Platform();
     rAssert( spInstance );
-MEMTRACK_POP_GROUP( "Win32Platform" );
+    MEMTRACK_POP_GROUP( "Win32Platform" );
 
     return spInstance;
 }
@@ -223,7 +223,7 @@ MEMTRACK_POP_GROUP( "Win32Platform" );
 // Win32Platform::GetInstance
 //==============================================================================
 //
-// Description: - Access point for the Win32Platform singleton.  
+// Description: - Access point for the Win32Platform singleton.
 //
 // Parameters:	None.
 //
@@ -276,9 +276,9 @@ void Win32Platform::DestroyInstance()
 // Constraints: Must be initialized before the platform.
 //
 //==============================================================================
-bool Win32Platform::InitializeWindow() 
+bool Win32Platform::InitializeWindow()
 {
-#ifdef WIN32
+    #ifdef WIN32
     // check to see if another instance is running...
     mhMutex = CreateMutex(NULL, 0, ApplicationName);
     if (GetLastError() == ERROR_ALREADY_EXISTS)
@@ -304,58 +304,58 @@ bool Win32Platform::InitializeWindow()
             return false;
         }
     }
-#endif
+    #endif
 
     // These attributes must be set prior to creating the first window
-#if RAD_GLES
-#if RAD_CG
+    #if RAD_GLES
+    #if RAD_CG
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
-#else
+    #else
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES );
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, RAD_GLES_VERSION );
-#endif
+    #endif
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 0 );
-#else
+    #else
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY );
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
-#endif
-#ifdef __SWITCH__
+    #endif
+    #ifdef __SWITCH__
     SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 32 );
-#else
+    #else
     SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
-#endif
+    #endif
     SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 0 );
 
     int flags = 0;
-#ifndef RAD_VITA
+    #ifndef RAD_VITA
     flags |= SDL_WINDOW_OPENGL;
-#endif
-#ifdef __SWITCH__
+    #endif
+    #ifdef __SWITCH__
     // Support switching between docked and handheld mode
     flags |= SDL_WINDOW_RESIZABLE;
-#endif
+    #endif
     int w, h;
     TranslateResolution( StartingResolution, w, h );
-#if SDL_MAJOR_VERSION < 3
+    #if SDL_MAJOR_VERSION < 3
     mWnd = SDL_CreateWindow( ApplicationName, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, flags );
-#else
+    #else
     mWnd = SDL_CreateWindow( ApplicationName, w, h, flags );
-#endif
+    #endif
 
     rAssert(mWnd != NULL);
 
-#if defined( PRINT_WINMESSAGES ) && defined( RAD_DEBUG )
+    #if defined( PRINT_WINMESSAGES ) && defined( RAD_DEBUG )
     SDL_SetHint( SDL_HINT_EVENT_LOGGING, "1" );
-#endif
+    #endif
     SDL_SetEventFilter( WndProc, mWnd );
 
     ShowTheCursor( false );
 
-#if SDL_MAJOR_VERSION < 3
+    #if SDL_MAJOR_VERSION < 3
     SDL_GetWindowGammaRamp( mWnd, DesktopGammaRamp[0], DesktopGammaRamp[1], DesktopGammaRamp[2] );
-#endif
+    #endif
 
     SDL_DisableScreenSaver();
 
@@ -376,7 +376,7 @@ bool Win32Platform::InitializeWindow()
 //              Consult their documentation before changing.
 //
 //==============================================================================
-void Win32Platform::InitializeFoundation() 
+void Win32Platform::InitializeFoundation()
 {
     //
     // Initialize the memory heaps
@@ -409,7 +409,7 @@ void Win32Platform::InitializeFoundation()
 
     //
     // Initilalize the platform system
-    // 
+    //
     ::radPlatformInitialize( mWnd );
 
     //
@@ -420,10 +420,10 @@ void Win32Platform::InitializeFoundation()
     //
     // Initialize the debug communication system.
     //
-    ::radDbgComTargetInitialize( WinSocket, 
-        radDbgComDefaultPort, // Default
-        NULL,                 // Default
-        GMA_DEBUG );
+    ::radDbgComTargetInitialize( WinSocket,
+                                 radDbgComDefaultPort, // Default
+                                 NULL,                 // Default
+                                 GMA_DEBUG );
 
 
     //
@@ -437,11 +437,11 @@ void Win32Platform::InitializeFoundation()
     // Initialize the file system.
     //
     ::radFileInitialize( 50, // Default
-        32, // Default
-        GMA_PERSISTENT );
+                         32, // Default
+                         GMA_PERSISTENT );
 
     ::radLoadInitialize();
-    //radLoad->SetSyncLoading( true );	
+    //radLoad->SetSyncLoading( true );
 
     ::radDriveMount( NULL, GMA_PERSISTENT);
 
@@ -457,11 +457,11 @@ void Win32Platform::InitializeFoundation()
 // Win32Platform::InitializeMemory
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 void Win32Platform::InitializeMemory()
@@ -491,11 +491,11 @@ void Win32Platform::InitializeMemory()
 // Win32Platform::ShutdownMemory
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 void Win32Platform::ShutdownMemory()
@@ -504,10 +504,10 @@ void Win32Platform::ShutdownMemory()
     {
         gMemorySystemInitialized = false;
 
-        // No shutdown the memory.  This leads to bad errors when destroying 
+        // No shutdown the memory.  This leads to bad errors when destroying
         // static variables sprinkled here and there.
         //::radMemoryTerminate();
-        
+
         ::radThreadTerminate();
     }
 }
@@ -522,17 +522,17 @@ void Win32Platform::ShutdownMemory()
 // Return:      None.
 //
 //==============================================================================
-void Win32Platform::InitializePlatform() 
+void Win32Platform::InitializePlatform()
 {
     HeapMgr()->PushHeap (GMA_PERSISTENT);
 
-#ifdef RAD_PC
+    #ifdef RAD_PC
     //
     // Register with the game config manager
     //
     GetGameConfigManager()->RegisterConfig(this);
     GetGameConfigManager()->LoadConfigFile();
-#endif
+    #endif
 
     //
     // Rendering is good.
@@ -544,17 +544,17 @@ void Win32Platform::InitializePlatform()
     //
     DisplaySplashScreen( Error ); // blank screen
 
-#ifndef __SWITCH__
+    #ifndef __SWITCH__
     //
     // Show in fullscreen if fullscreen flag is set.
     //
     SDL_SetWindowFullscreen( mWnd, mFullscreen ? SDL_WINDOW_FULLSCREEN : 0 );
-#endif
+    #endif
 
     //
     // Opening the drive is SLOW...
     //
-    InitializeFoundationDrive();    
+    InitializeFoundationDrive();
 
     //
     // Initialize the controller.
@@ -584,28 +584,28 @@ void Win32Platform::ShutdownPlatform()
 //=============================================================================
 // Win32Platform::LaunchDashboard
 //=============================================================================
-// Description: We use this a the emergency exit from the game if we arent in a context that suppose the transition 
-//                    to the CONTEXT_EXIT  
+// Description: We use this a the emergency exit from the game if we arent in a context that suppose the transition
+//                    to the CONTEXT_EXIT
 // Parameters:  ()
 //
-// Return:      void 
+// Return:      void
 //
 //=============================================================================
 void Win32Platform::LaunchDashboard()
-{   
+{
 
     {
         //chuck I copied and pasted from the other platform's implementations
 
         GetLoadingManager()->CancelPendingRequests();
-           //TODO: Make sure sounds shut down too.
+        //TODO: Make sure sounds shut down too.
         GetSoundManager()->SetMasterVolume( 0.0f );
 
-       // DisplaySplashScreen( FadeToBlack );
+        // DisplaySplashScreen( FadeToBlack );
 
         GetPresentationManager()->StopAll();
 
-        //Shouldn't need to do this since, this singleton and the others should get destroyed once we 
+        //Shouldn't need to do this since, this singleton and the others should get destroyed once we
         //retrun the main loop
         //GameDataManager::DestroyInstance();  //Get rid of memcards
 
@@ -615,7 +615,7 @@ void Win32Platform::LaunchDashboard()
 
         //Shouldnt need the early destruction of this singleton either
         //SoundManager::DestroyInstance();
-        
+
         //Dont want to shutdown platform early either.
         //ShutdownPlatform();
         //rAssertMsg( false, "Doesn't make sense for win32." );
@@ -629,7 +629,7 @@ void Win32Platform::LaunchDashboard()
 //
 // Parameters:  ()
 //
-// Return:      void 
+// Return:      void
 //
 //=============================================================================
 void Win32Platform::ResetMachine()
@@ -642,24 +642,24 @@ void Win32Platform::ResetMachine()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( SplashScreen screenID, 
-//                const char* overlayText = NULL, 
-//                float fontScale = 1.0f, 
-//                float textPosX = 0.0f, 
+// Parameters:  ( SplashScreen screenID,
+//                const char* overlayText = NULL,
+//                float fontScale = 1.0f,
+//                float textPosX = 0.0f,
 //                float textPosY = 0.0f,
 //                tColour textColour,
 //                int fadeFrames = 3 )
 //
-// Return:      void 
+// Return:      void
 //
 //=============================================================================
-void Win32Platform::DisplaySplashScreen( SplashScreen screenID, 
-                                       const char* overlayText, 
-                                       float fontScale, 
-                                       float textPosX, 
-                                       float textPosY,
-                                       tColour textColour,
-                                       int fadeFrames )
+void Win32Platform::DisplaySplashScreen( SplashScreen screenID,
+                                         const char* overlayText,
+                                         float fontScale,
+                                         float textPosX,
+                                         float textPosY,
+                                         tColour textColour,
+                                         int fadeFrames )
 {
     HeapMgr()->PushHeap( GMA_TEMP );
 
@@ -768,24 +768,24 @@ void Win32Platform::DisplaySplashScreen( SplashScreen screenID,
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const char* textureName, 
-//                const char* overlayText = NULL, 
-//                float fontScale = 1.0f, 
-//                float textPosX = 0.0f, 
-//                float textPosY = 0.0f, 
+// Parameters:  ( const char* textureName,
+//                const char* overlayText = NULL,
+//                float fontScale = 1.0f,
+//                float textPosX = 0.0f,
+//                float textPosY = 0.0f,
 //                tColour textColour,
 //                int fadeFrames = 3 )
 //
-// Return:      void 
+// Return:      void
 //
 //=============================================================================
 void Win32Platform::DisplaySplashScreen( const char* textureName,
-                                       const char* overlayText, 
-                                       float fontScale, 
-                                       float textPosX, 
-                                       float textPosY, 
-                                       tColour textColour,
-                                       int fadeFrames )
+                                         const char* overlayText,
+                                         float fontScale,
+                                         float textPosX,
+                                         float textPosY,
+                                         tColour textColour,
+                                         int fadeFrames )
 {
 }
 
@@ -805,7 +805,7 @@ void Win32Platform::OnControllerError(const char *msg)
 //
 // Parameters:  ( radFileError error, const char* pDriveName, void* pUserData )
 //
-// Return:      bool 
+// Return:      bool
 //
 //=============================================================================
 bool Win32Platform::OnDriveError( radFileError error, const char* pDriveName, void* pUserData )
@@ -821,7 +821,7 @@ bool Win32Platform::OnDriveError( radFileError error, const char* pDriveName, vo
 
     switch ( error )
     {
-    case Success:
+        case Success:
         {
             if ( mErrorState != NONE )
             {
@@ -833,66 +833,90 @@ bool Win32Platform::OnDriveError( radFileError error, const char* pDriveName, vo
             return true;
             break;
         }
-    case FileNotFound:
+        case FileNotFound:
         {
-                radFileRequest* request = static_cast<radFileRequest*>( pUserData );
-                const char* fileName = request->GetFilename(); 
+            if ( pUserData == NULL )
+            {
+                return false;
+            }
 
-                char errorString[512];
-                // Show the raw fileName so you can see if it's prepending anything weird
-                sprintf( errorString, "File Not Found:\n%s", fileName );
+            radFileRequest* request = static_cast<radFileRequest*>( pUserData );
+            const char* fileName = request->GetFilename();
 
-                fprintf(stderr, "ERROR: %s\n", errorString);
+            if ( fileName != NULL )
+            {
+                #ifdef RAD_PC
+                if( strcmp( fileName, GameConfigManager::ConfigFilename ) == 0 )
+                {
+                    return false;
+                }
+                #endif
+
+                const char* lastSlash = strrchr( fileName, '/' );
+                const char* lastBackslash = strrchr( fileName, '\\' );
+                const char* adjustedName = fileName;
+
+                if ( lastSlash || lastBackslash )
+                {
+                    adjustedName = ( lastSlash > lastBackslash ) ? lastSlash + 1 : lastBackslash + 1;
+                }
+
+                char errorString[256];
+                snprintf( errorString, sizeof( errorString ), "%s:\n%s", ERROR_STRINGS[error], adjustedName );
+
+                fprintf( stderr, "ERROR: %s\n", errorString );
                 DisplaySplashScreen( Error, errorString, 0.7f, 0.0f, 0.0f, tColour(255, 255, 255), 0 );
 
                 mErrorState = P_ERROR;
                 mPauseForError = true;
                 return true;
+            }
+            return false;
         }
-        
+
         /*{
-            rAssert( pUserData != NULL );
+         *            rAssert( pUserData != NULL );
+         *
+         *            radFileRequest* request = static_cast<radFileRequest*>( pUserData );
+         *            const char* fileName = request->GetFilename();
+         *
+         *            //Get rid of the slashes.
+         *            unsigned int i;
+         *            unsigned int lastIndex = 0;
+         *            for ( i = 0; i < strlen( fileName ); ++i )
+         *            {
+         *                if ( fileName[ i ] == '/' || fileName[ i ] == '\\' )
+         *                {
+         *                    lastIndex = i;
+    }
+    }
 
-            radFileRequest* request = static_cast<radFileRequest*>( pUserData );
-            const char* fileName = request->GetFilename();
+    unsigned int adjustedIndex = lastIndex == 0 ? lastIndex : lastIndex + 1;
 
-            //Get rid of the slashes.
-            unsigned int i;
-            unsigned int lastIndex = 0;
-            for ( i = 0; i < strlen( fileName ); ++i )
-            {
-                if ( fileName[ i ] == '/' || fileName[ i ] == '\\' )
-                {
-                    lastIndex = i;
-                }
-            }
+    char adjustedName[256];
+    strncpy( adjustedName, &fileName[adjustedIndex], ( strlen( fileName ) - lastIndex ) );
+    adjustedName[ strlen( fileName ) - lastIndex ] = '\0';
 
-            unsigned int adjustedIndex = lastIndex == 0 ? lastIndex : lastIndex + 1;
+    #ifdef RAD_PC
+    if( strcmp( fileName, GameConfigManager::ConfigFilename ) == 0 )
+    {
+    return false;
+    }
+    #endif
 
-            char adjustedName[256];
-            strncpy( adjustedName, &fileName[adjustedIndex], ( strlen( fileName ) - lastIndex ) );
-            adjustedName[ strlen( fileName ) - lastIndex ] = '\0';
+    char errorString[256];
+    sprintf( errorString, "%s:\n%s", ERROR_STRINGS[error], adjustedName );
+    fprintf(stderr, "error: %s\n", errorString);
+    DisplaySplashScreen( Error, errorString, 1.0f, 0.0f, 0.0f, tColour(255, 255, 255), 0 );
+    mErrorState = P_ERROR;
+    mPauseForError = true;
 
-#ifdef RAD_PC
-            if( strcmp( fileName, GameConfigManager::ConfigFilename ) == 0 )
-            {
-                return false;
-            }
-#endif
-
-            char errorString[256];
-            sprintf( errorString, "%s:\n%s", ERROR_STRINGS[error], adjustedName );
-            fprintf(stderr, "error: %s\n", errorString);
-            DisplaySplashScreen( Error, errorString, 1.0f, 0.0f, 0.0f, tColour(255, 255, 255), 0 );
-            mErrorState = P_ERROR;
-            mPauseForError = true;
-
-            return true;*/
-    case NoMedia:
-    case MediaNotFormatted:
-    case MediaCorrupt:
-    case NoFreeSpace:
-    case HardwareFailure:
+    return true;*/
+        case NoMedia:
+        case MediaNotFormatted:
+        case MediaCorrupt:
+        case NoFreeSpace:
+        case HardwareFailure:
         {
             //This could be the wrong disc.
             fprintf(stderr, "error: %s\n", ERROR_STRINGS[error]);
@@ -902,7 +926,7 @@ bool Win32Platform::OnDriveError( radFileError error, const char* pDriveName, vo
 
             return true;
         }
-    default:
+        default:
         {
             //Others are not supported.
             rAssert( false );
@@ -1005,7 +1029,7 @@ bool Win32Platform::IsFullscreen() const
 //
 // Parameters:  n/a
 //
-// Returns:     
+// Returns:
 //
 // Notes:
 //=============================================================================
@@ -1022,7 +1046,7 @@ const char* Win32Platform::GetConfigName() const
 //
 // Parameters:  n/a
 //
-// Returns:     
+// Returns:
 //
 // Notes:
 //=============================================================================
@@ -1039,25 +1063,25 @@ int Win32Platform::GetNumProperties() const
 //
 // Parameters:  n/a
 //
-// Returns:     
+// Returns:
 //
 // Notes:
 //=============================================================================
 
 void Win32Platform::LoadDefaults()
 {
-#ifdef RAD_PC
+    #ifdef RAD_PC
 
-#ifdef RAD_DEBUG
+    #ifdef RAD_DEBUG
     SetResolution( StartingResolution, StartingBPP, !CommandLineOptions::Get( CLO_WINDOW_MODE ) );
-#else
+    #else
     SetResolution( StartingResolution, StartingBPP, true );
-#endif
+    #endif
 
-#else
+    #else
     SetResolution( StartingResolution, StartingBPP, false );
-#endif
-    
+    #endif
+
 
     GetRenderFlow()->SetGamma( 1.0f );
 }
@@ -1069,7 +1093,7 @@ void Win32Platform::LoadDefaults()
 //
 // Parameters:  n/a
 //
-// Returns:     
+// Returns:
 //
 // Notes:
 //=============================================================================
@@ -1154,7 +1178,7 @@ void Win32Platform::LoadConfig( ConfigString& config )
 //
 // Parameters:  config string to save to
 //
-// Returns:     
+// Returns:
 //
 // Notes:
 //=============================================================================
@@ -1231,11 +1255,11 @@ void Win32Platform::SaveConfig( ConfigString& config )
 //
 //==============================================================================
 Win32Platform::Win32Platform() :
-    mpPlatform( NULL ),
-    mpContext( NULL ),
-    mResolution( StartingResolution ),
-    mbpp( StartingBPP ),
-    mRenderer( "dx8" )
+mpPlatform( NULL ),
+mpContext( NULL ),
+mResolution( StartingResolution ),
+mbpp( StartingBPP ),
+mRenderer( "dx8" )
 {
     mFullscreen = false;
 }
@@ -1254,9 +1278,9 @@ Win32Platform::Win32Platform() :
 Win32Platform::~Win32Platform()
 {
     HeapManager::DestroyInstance();
-#ifdef WIN32
+    #ifdef WIN32
     CloseHandle( mhMutex );
-#endif
+    #endif
 }
 
 //==============================================================================
@@ -1272,7 +1296,7 @@ Win32Platform::~Win32Platform()
 //              Consult their documentation before changing.
 //
 //==============================================================================
-void Win32Platform::InitializeFoundationDrive() 
+void Win32Platform::InitializeFoundationDrive()
 {
     //
     // Get the default drive and hold it open for the life of the game.
@@ -1283,7 +1307,7 @@ void Win32Platform::InitializeFoundationDrive()
 
     ::radGetDefaultDrive( defaultDrive );
 
-    ::radDriveOpenSync( &mpIRadDrive, 
+    ::radDriveOpenSync( &mpIRadDrive,
                         defaultDrive,
                         NormalPriority, // Default
                         GMA_PERSISTENT );
@@ -1343,9 +1367,9 @@ void Win32Platform::ShutdownFoundation()
 // Return:      None.
 //
 //==============================================================================
-void Win32Platform::InitializePure3D() 
+void Win32Platform::InitializePure3D()
 {
-MEMTRACK_PUSH_GROUP( "Win32Platform" );
+    MEMTRACK_PUSH_GROUP( "Win32Platform" );
     //    p3d::SetMemAllocator( p3d::ALLOC_DEFAULT, GMA_PERSISTENT );
     //    p3d::SetMemAllocator( p3d::ALLOC_LOADED, GMA_LEVEL );
 
@@ -1388,110 +1412,110 @@ MEMTRACK_PUSH_GROUP( "Win32Platform" );
 
     //    p3d->AddHandler(new tGeometryLoader);
     //    GeometryWrappedLoader* pGWL = new GeometryWrappedLoader;
-    GeometryWrappedLoader* pGWL = 
-        (GeometryWrappedLoader*)GetAllWrappers()->mpLoader( AllWrappers::msGeometry );
+    GeometryWrappedLoader* pGWL =
+    (GeometryWrappedLoader*)GetAllWrappers()->mpLoader( AllWrappers::msGeometry );
     pGWL->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pGWL );
 
-    StaticEntityLoader* pSEL = 
-        (StaticEntityLoader*)GetAllWrappers()->mpLoader( AllWrappers::msStaticEntity );
+    StaticEntityLoader* pSEL =
+    (StaticEntityLoader*)GetAllWrappers()->mpLoader( AllWrappers::msStaticEntity );
     pSEL->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pSEL );
 
-    StaticPhysLoader* pSPL = 
-        (StaticPhysLoader*)GetAllWrappers()->mpLoader( AllWrappers::msStaticPhys );
+    StaticPhysLoader* pSPL =
+    (StaticPhysLoader*)GetAllWrappers()->mpLoader( AllWrappers::msStaticPhys );
     pSPL->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pSPL );
 
-    TreeDSGLoader* pTDL = 
-        (TreeDSGLoader*)GetAllWrappers()->mpLoader( AllWrappers::msTreeDSG );
+    TreeDSGLoader* pTDL =
+    (TreeDSGLoader*)GetAllWrappers()->mpLoader( AllWrappers::msTreeDSG );
     pTDL->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pTDL );
 
-    FenceLoader* pFL = 
-        (FenceLoader*)GetAllWrappers()->mpLoader( AllWrappers::msFenceEntity );
+    FenceLoader* pFL =
+    (FenceLoader*)GetAllWrappers()->mpLoader( AllWrappers::msFenceEntity );
     pFL->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pFL );
 
-    IntersectLoader* pIL = 
-        (IntersectLoader*)GetAllWrappers()->mpLoader( AllWrappers::msIntersectDSG );
+    IntersectLoader* pIL =
+    (IntersectLoader*)GetAllWrappers()->mpLoader( AllWrappers::msIntersectDSG );
     pIL->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pIL );
 
-    AnimCollLoader* pACL = 
-        (AnimCollLoader*)GetAllWrappers()->mpLoader( AllWrappers::msAnimCollEntity );
+    AnimCollLoader* pACL =
+    (AnimCollLoader*)GetAllWrappers()->mpLoader( AllWrappers::msAnimCollEntity );
     pACL->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pACL );
 
-    AnimDSGLoader* pAnimDSGLoader = 
-        (AnimDSGLoader*)GetAllWrappers()->mpLoader( AllWrappers::msAnimEntity );
+    AnimDSGLoader* pAnimDSGLoader =
+    (AnimDSGLoader*)GetAllWrappers()->mpLoader( AllWrappers::msAnimEntity );
     pAnimDSGLoader->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pAnimDSGLoader );
 
 
-    DynaPhysLoader* pDPL = 
-        (DynaPhysLoader*)GetAllWrappers()->mpLoader( AllWrappers::msDynaPhys );
+    DynaPhysLoader* pDPL =
+    (DynaPhysLoader*)GetAllWrappers()->mpLoader( AllWrappers::msDynaPhys );
     pDPL->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pDPL );
 
-    InstStatPhysLoader* pISPL = 
-        (InstStatPhysLoader*)GetAllWrappers()->mpLoader( AllWrappers::msInstStatPhys );
+    InstStatPhysLoader* pISPL =
+    (InstStatPhysLoader*)GetAllWrappers()->mpLoader( AllWrappers::msInstStatPhys );
     pISPL->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pISPL );
 
-    InstStatEntityLoader* pISEL = 
-        (InstStatEntityLoader*)GetAllWrappers()->mpLoader( AllWrappers::msInstStatEntity );
+    InstStatEntityLoader* pISEL =
+    (InstStatEntityLoader*)GetAllWrappers()->mpLoader( AllWrappers::msInstStatEntity );
     pISEL->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pISEL );
 
-    LocatorLoader* pLL = 
-        (LocatorLoader*)GetAllWrappers()->mpLoader( AllWrappers::msLocator);
+    LocatorLoader* pLL =
+    (LocatorLoader*)GetAllWrappers()->mpLoader( AllWrappers::msLocator);
     pLL->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pLL );
 
-    RoadLoader* pRL = 
-        (RoadLoader*)GetAllWrappers()->mpLoader( AllWrappers::msRoadSegment);
+    RoadLoader* pRL =
+    (RoadLoader*)GetAllWrappers()->mpLoader( AllWrappers::msRoadSegment);
     pRL->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pRL );
 
-    PathLoader* pPL = 
-        (PathLoader*)GetAllWrappers()->mpLoader( AllWrappers::msPathSegment);
+    PathLoader* pPL =
+    (PathLoader*)GetAllWrappers()->mpLoader( AllWrappers::msPathSegment);
     pPL->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pPL );
 
-    WorldSphereLoader* pWSL = 
-        (WorldSphereLoader*)GetAllWrappers()->mpLoader( AllWrappers::msWorldSphere);
+    WorldSphereLoader* pWSL =
+    (WorldSphereLoader*)GetAllWrappers()->mpLoader( AllWrappers::msWorldSphere);
     pWSL->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pWSL );
 
-    LensFlareLoader* pLSL = 
-        (LensFlareLoader*)GetAllWrappers()->mpLoader( AllWrappers::msLensFlare);
+    LensFlareLoader* pLSL =
+    (LensFlareLoader*)GetAllWrappers()->mpLoader( AllWrappers::msLensFlare);
     pLSL->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pLSL );
 
-    BillboardWrappedLoader* pBWL = 
-        (BillboardWrappedLoader*)GetAllWrappers()->mpLoader( AllWrappers::msBillboard);
+    BillboardWrappedLoader* pBWL =
+    (BillboardWrappedLoader*)GetAllWrappers()->mpLoader( AllWrappers::msBillboard);
     pBWL->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pBWL );
 
 
-    InstParticleSystemLoader* pInstParticleSystemLoader = 
-        (InstParticleSystemLoader*) GetAllWrappers()->mpLoader( AllWrappers::msInstParticleSystem);
+    InstParticleSystemLoader* pInstParticleSystemLoader =
+    (InstParticleSystemLoader*) GetAllWrappers()->mpLoader( AllWrappers::msInstParticleSystem);
     pInstParticleSystemLoader->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pInstParticleSystemLoader );
 
-    BreakableObjectLoader* pBreakableObjectLoader = 
-        (BreakableObjectLoader*) GetAllWrappers()->mpLoader( AllWrappers::msBreakableObject);
+    BreakableObjectLoader* pBreakableObjectLoader =
+    (BreakableObjectLoader*) GetAllWrappers()->mpLoader( AllWrappers::msBreakableObject);
     pBreakableObjectLoader->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pBreakableObjectLoader );
 
-    AnimDynaPhysLoader*	pAnimDynaPhysLoader = 
-        (AnimDynaPhysLoader*) GetAllWrappers()->mpLoader( AllWrappers::msAnimDynaPhys);
+    AnimDynaPhysLoader*	pAnimDynaPhysLoader =
+    (AnimDynaPhysLoader*) GetAllWrappers()->mpLoader( AllWrappers::msAnimDynaPhys);
     pAnimDynaPhysLoader->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pAnimDynaPhysLoader );
 
-    AnimDynaPhysWrapperLoader* pAnimWrapperLoader = 
-        (AnimDynaPhysWrapperLoader*) GetAllWrappers()->mpLoader( AllWrappers::msAnimDynaPhysWrapper);
+    AnimDynaPhysWrapperLoader* pAnimWrapperLoader =
+    (AnimDynaPhysWrapperLoader*) GetAllWrappers()->mpLoader( AllWrappers::msAnimDynaPhysWrapper);
     pAnimWrapperLoader->SetRegdListener( GetRenderManager(), 0 );
     p3d->AddHandler( pAnimWrapperLoader );
 
@@ -1538,13 +1562,13 @@ MEMTRACK_PUSH_GROUP( "Win32Platform" );
     // sim lib
     sim::InstallSimLoaders();
 
-    p3d->AddHandler(new(GMA_PERSISTENT) CameraDataLoader, SRR2::ChunkID::FOLLOWCAM);    
-    p3d->AddHandler(new(GMA_PERSISTENT) CameraDataLoader, SRR2::ChunkID::WALKERCAM);    
-    p3d->AddHandler(new(GMA_PERSISTENT) IntersectionLoader);    
-    //p3d->AddHandler(new(GMA_PERSISTENT) RoadLoader);    
-    p3d->AddHandler(new(GMA_PERSISTENT) RoadDataSegmentLoader);    
+    p3d->AddHandler(new(GMA_PERSISTENT) CameraDataLoader, SRR2::ChunkID::FOLLOWCAM);
+    p3d->AddHandler(new(GMA_PERSISTENT) CameraDataLoader, SRR2::ChunkID::WALKERCAM);
+    p3d->AddHandler(new(GMA_PERSISTENT) IntersectionLoader);
+    //p3d->AddHandler(new(GMA_PERSISTENT) RoadLoader);
+    p3d->AddHandler(new(GMA_PERSISTENT) RoadDataSegmentLoader);
     p3d->AddHandler(new(GMA_PERSISTENT) CStatePropDataLoader);
-MEMTRACK_POP_GROUP( "Win32Platform" );
+    MEMTRACK_POP_GROUP( "Win32Platform" );
 }
 
 
@@ -1554,7 +1578,7 @@ MEMTRACK_POP_GROUP( "Win32Platform" );
 // Description: Clean up and shut down Pure3D.
 //
 // Parameters:	None.
-// 
+//
 // Return:      None.
 //
 //==============================================================================
@@ -1673,7 +1697,7 @@ void Win32Platform::InitializeContext()
 
 void Win32Platform::TranslateResolution( Resolution res, int&x, int&y )
 {
-#ifdef __SWITCH__
+    #ifdef __SWITCH__
     AppletOperationMode operationMode = appletGetOperationMode();
     if( operationMode == AppletOperationMode_Handheld )
     {
@@ -1685,10 +1709,10 @@ void Win32Platform::TranslateResolution( Resolution res, int&x, int&y )
         x = 1920;
         y = 1080;
     }
-#elif defined(RAD_VITA)
+    #elif defined(RAD_VITA)
     x = 960;
     y = 544;
-#else
+    #else
     switch( res )
     {
         case Res_640x480:
@@ -1732,7 +1756,7 @@ void Win32Platform::TranslateResolution( Resolution res, int&x, int&y )
             rAssert( false );
         }
     }
-#endif
+    #endif
 }
 
 //==============================================================================
@@ -1817,16 +1841,16 @@ void Win32Platform::ResizeWindow()
 void Win32Platform::ShowTheCursor( bool show )
 {
     if( mShowCursor != show )
-    {        
+    {
         mShowCursor = show;
-#if SDL_MAJOR_VERSION < 3
+        #if SDL_MAJOR_VERSION < 3
         SDL_ShowCursor( mShowCursor ? SDL_ENABLE : SDL_DISABLE );
-#else
+        #else
         if( mShowCursor )
             SDL_ShowCursor();
         else
             SDL_HideCursor();
-#endif
+        #endif
     }
 }
 
@@ -1856,163 +1880,163 @@ bool SDLCALL Win32Platform::WndProc( void * userdata, SDL_Event * event )
 
     switch(event->type)
     {
-#if SDL_MAJOR_VERSION < 3
-    case SDL_WINDOWEVENT: // WM_ACTIVATEAPP
-#else
-    default: // WM_ACTIVATEAPP
-        if( event->type >= SDL_EVENT_WINDOW_FIRST && event->type <= SDL_EVENT_WINDOW_LAST )
-#endif
-        {
-            //
-            // Under Win32, Pure3D needs to get a crack at the Windows messages so
-            // it can detect window moving, resizing, and activation.
-            //
-            if (p3d::platform != NULL)
-                p3d::platform->ProcessWindowsMessage( wnd, &event->window );
-
-            if( spInstance != NULL && spInstance->mpContext != NULL )
+        #if SDL_MAJOR_VERSION < 3
+        case SDL_WINDOWEVENT: // WM_ACTIVATEAPP
+            #else
+        default: // WM_ACTIVATEAPP
+            if( event->type >= SDL_EVENT_WINDOW_FIRST && event->type <= SDL_EVENT_WINDOW_LAST )
+                #endif
             {
-                InputManager* pInputManager = GetInputManager();
-#if SDL_MAJOR_VERSION < 3
-                switch( event->window.event )
+                //
+                // Under Win32, Pure3D needs to get a crack at the Windows messages so
+                // it can detect window moving, resizing, and activation.
+                //
+                if (p3d::platform != NULL)
+                    p3d::platform->ProcessWindowsMessage( wnd, &event->window );
+
+                if( spInstance != NULL && spInstance->mpContext != NULL )
                 {
-                case SDL_WINDOWEVENT_FOCUS_GAINED: // Window is being shown (in focus)
+                    InputManager* pInputManager = GetInputManager();
+                    #if SDL_MAJOR_VERSION < 3
+                    switch( event->window.event )
                     {
-                        RenderFlow* rf = GetRenderFlow();
-
-                        rf->SetGamma( rf->GetGamma() );
-                        if( pInputManager )
+                        case SDL_WINDOWEVENT_FOCUS_GAINED: // Window is being shown (in focus)
                         {
-                            //GetInputManager()->SetRumbleForDevice(0, true);
-                            //rDebugPrintf("Force Effects Started!!! \n");
+                            RenderFlow* rf = GetRenderFlow();
+
+                            rf->SetGamma( rf->GetGamma() );
+                            if( pInputManager )
+                            {
+                                //GetInputManager()->SetRumbleForDevice(0, true);
+                                //rDebugPrintf("Force Effects Started!!! \n");
+                            }
                         }
-                    }
-                    break;
+                        break;
 
-                case SDL_WINDOWEVENT_FOCUS_LOST:  // Window is being hidden (not in focus)
-                    SDL_SetWindowGammaRamp( wnd,
-                        DesktopGammaRamp[0],
-                        DesktopGammaRamp[1],
-                        DesktopGammaRamp[2] );
-                    if( pInputManager )
+                        case SDL_WINDOWEVENT_FOCUS_LOST:  // Window is being hidden (not in focus)
+                            SDL_SetWindowGammaRamp( wnd,
+                                                    DesktopGammaRamp[0],
+                                                    DesktopGammaRamp[1],
+                                                    DesktopGammaRamp[2] );
+                            if( pInputManager )
+                            {
+                                //GetInputManager()->SetRumbleForDevice(0, false);
+                                //rDebugPrintf("Force Effects Stopped!!! \n");
+                            }
+                            break;
+
+                            #ifdef RAD_PC
+                        case SDL_WINDOWEVENT_LEAVE:
+                            GetInputManager()->GetFEMouse()->getCursor()->SetVisible( false );
+                            break;
+                            #endif
+                    }
+
+                    ShowTheCursor( event->window.event == SDL_WINDOWEVENT_FOCUS_LOST );
+                    #else
+                    switch( event->window.type )
                     {
-                        //GetInputManager()->SetRumbleForDevice(0, false);
-                        //rDebugPrintf("Force Effects Stopped!!! \n");
-                    }
-                    break;
+                        case SDL_EVENT_WINDOW_FOCUS_GAINED: // Window is being shown (in focus)
+                        {
+                            RenderFlow* rf = GetRenderFlow();
 
-#ifdef RAD_PC
-                case SDL_WINDOWEVENT_LEAVE:
-                    GetInputManager()->GetFEMouse()->getCursor()->SetVisible( false );
-                    break;
-#endif
+                            rf->SetGamma( rf->GetGamma() );
+                            if( pInputManager )
+                            {
+                                //GetInputManager()->SetRumbleForDevice(0, true);
+                                //rDebugPrintf("Force Effects Started!!! \n");
+                            }
+                        }
+                        SDL_HideCursor();
+                        break;
+
+                        case SDL_EVENT_WINDOW_FOCUS_LOST:  // Window is being hidden (not in focus)
+                            if( pInputManager )
+                            {
+                                //GetInputManager()->SetRumbleForDevice(0, false);
+                                //rDebugPrintf("Force Effects Stopped!!! \n");
+                            }
+                            SDL_ShowCursor();
+                            break;
+
+                            #ifdef RAD_PC
+                        case SDL_EVENT_WINDOW_LEAVE:
+                            GetInputManager()->GetFEMouse()->getCursor()->SetVisible( false );
+                            break;
+                            #endif
+                    }
+                    #endif
                 }
 
-                ShowTheCursor( event->window.event == SDL_WINDOWEVENT_FOCUS_LOST );
-#else
-                switch( event->window.type )
-                {
-                case SDL_EVENT_WINDOW_FOCUS_GAINED: // Window is being shown (in focus)
-                    {
-                        RenderFlow* rf = GetRenderFlow();
+                break;
+            }
 
-                        rf->SetGamma( rf->GetGamma() );
-                        if( pInputManager )
+            #if SDL_MAJOR_VERSION < 3
+                        case SDL_KEYDOWN: // WM_SYSKEYDOWN
+                        case SDL_KEYUP:   // WM_SYSKEYUP
+                            #else
+                        case SDL_EVENT_KEY_DOWN: // WM_SYSKEYDOWN
+                        case SDL_EVENT_KEY_UP:   // WM_SYSKEYUP
+                            #endif
                         {
-                            //GetInputManager()->SetRumbleForDevice(0, true);
-                            //rDebugPrintf("Force Effects Started!!! \n");
+                            //Ignore Alt and F10 keys.
+                            #if SDL_MAJOR_VERSION < 3
+                            switch( event->key.keysym.sym )
+                                #else
+                                switch( event->key.key )
+                                    #endif
+                                {
+                                    case SDLK_LALT:
+                                    case SDLK_RALT:
+                                        return 0;
+                                    case SDLK_F10:
+                                        return 0;
+                                    default: break;
+                                }
                         }
-                    }
-                    SDL_HideCursor();
-                    break;
 
-                case SDL_EVENT_WINDOW_FOCUS_LOST:  // Window is being hidden (not in focus)
-                    if( pInputManager )
-                    {
-                        //GetInputManager()->SetRumbleForDevice(0, false);
-                        //rDebugPrintf("Force Effects Stopped!!! \n");
-                    }
-                    SDL_ShowCursor();
-                    break;
+                        #if SDL_MAJOR_VERSION < 3
+                                    case SDL_MOUSEMOTION:
+                                        #else
+                                    case SDL_EVENT_MOUSE_MOTION:
+                                        #endif
+                                    {
+                                        #ifdef RAD_PC
+                                        // For some reason beyond my comprehension WM_MOUSEMOVE seems to be getting called regardless if the
+                                        // mouse moved or not. So let the FEMouse determine if we moved.
+                                        FEMouse* pFEMouse = GetInputManager()->GetFEMouse();
+                                        if( pFEMouse->DidWeMove( event->motion.x, event->motion.y ) )
+                                        {
+                                            int w, h;
+                                            SDL_GetWindowSize( wnd, &w, &h );
+                                            pFEMouse->Move( event->motion.x, event->motion.y, w, h );
+                                        }
+                                        #endif
 
-#ifdef RAD_PC
-                case SDL_EVENT_WINDOW_LEAVE:
-                    GetInputManager()->GetFEMouse()->getCursor()->SetVisible( false );
-                    break;
-#endif
-                }
-#endif
-            }
+                                        ShowTheCursor( false );
 
-            break;
-        }
+                                        break;
+                                    }
 
-#if SDL_MAJOR_VERSION < 3
-    case SDL_KEYDOWN: // WM_SYSKEYDOWN
-    case SDL_KEYUP:   // WM_SYSKEYUP
-#else
-    case SDL_EVENT_KEY_DOWN: // WM_SYSKEYDOWN
-    case SDL_EVENT_KEY_UP:   // WM_SYSKEYUP
-#endif
-        {
-            //Ignore Alt and F10 keys.
-#if SDL_MAJOR_VERSION < 3
-            switch( event->key.keysym.sym )
-#else
-            switch( event->key.key )
-#endif
-            {
-            case SDLK_LALT:
-            case SDLK_RALT:
-            	return 0;
-            case SDLK_F10:
-            	return 0;
-            default: break;
-            }
-        }
-
-#if SDL_MAJOR_VERSION < 3
-    case SDL_MOUSEMOTION:
-#else
-    case SDL_EVENT_MOUSE_MOTION:
-#endif
-        {
-#ifdef RAD_PC
-            // For some reason beyond my comprehension WM_MOUSEMOVE seems to be getting called regardless if the
-            // mouse moved or not. So let the FEMouse determine if we moved.
-            FEMouse* pFEMouse = GetInputManager()->GetFEMouse();
-            if( pFEMouse->DidWeMove( event->motion.x, event->motion.y ) )
-            {
-                int w, h;
-                SDL_GetWindowSize( wnd, &w, &h );
-                pFEMouse->Move( event->motion.x, event->motion.y, w, h );
-            }
-#endif
-
-            ShowTheCursor( false );
-
-            break;
-        }
-
-#ifdef RAD_PC
-    case SDL_MOUSEBUTTONDOWN:
-        if (event->button.button == SDL_BUTTON_LEFT)
-            GetInputManager()->GetFEMouse()->ButtonDown( BUTTON_LEFT );
-    //        rDebugPrintf("LEFT MOUSE BUTTON PRESSED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! \n");
+                                    #ifdef RAD_PC
+                                    case SDL_MOUSEBUTTONDOWN:
+                                        if (event->button.button == SDL_BUTTON_LEFT)
+                                            GetInputManager()->GetFEMouse()->ButtonDown( BUTTON_LEFT );
+        //        rDebugPrintf("LEFT MOUSE BUTTON PRESSED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! \n");
         break;
 
-    case SDL_MOUSEBUTTONUP:
-        if(event->button.button == SDL_BUTTON_LEFT)
-            GetInputManager()->GetFEMouse()->ButtonUp( BUTTON_LEFT );
+                                    case SDL_MOUSEBUTTONUP:
+                                        if(event->button.button == SDL_BUTTON_LEFT)
+                                            GetInputManager()->GetFEMouse()->ButtonUp( BUTTON_LEFT );
         break;
-#endif
+        #endif
 
         // PDDI will sent this message to enable or disable rendering in response to an
         // application level window event.  For example, if the user clicks away from
         // the rendering window, or uses ALT-TAB to select another application, PDDI
         // will tell sent a WM_PDDI_DRAW_ENABLE(0) message.  When the application
         // regains focus, WM_PDDI_DRAW_ENABLE(1) will be sent.
-    //case WM_PDDI_DRAW_ENABLE:
+        //case WM_PDDI_DRAW_ENABLE:
         //GetApplication()->EnableRendering(wParam == 1);
         break;
     }
