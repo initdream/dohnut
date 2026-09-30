@@ -313,9 +313,9 @@ void radFileSystem::ProcessFileName
     //
     while( *p && simpleName==false)
     {
-        if( *p == '\\' )
+        if( *p == '/' )
         {
-            *p = '/';
+            *p = '\\';
         }
         p++;
     }

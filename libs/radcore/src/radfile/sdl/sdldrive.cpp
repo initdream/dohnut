@@ -97,6 +97,7 @@ radSdlDrive::radSdlDrive( const char* pdrivespec, radMemoryAllocator alloc )
     // Copy the drivename
     //
     radGetDefaultDrive( m_DriveName );
+    m_DrivePath[0] = '\0';
     if ( strcmp(m_DriveName, pdrivespec ) != 0 )
     {
         strncpy( m_DriveName, pdrivespec, radFileDrivenameMax );
