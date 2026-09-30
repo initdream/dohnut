@@ -39,7 +39,7 @@ make -j$(nproc)
 ```
 The resulting binary will be located in `build/code/`.
 
-# tools
+# tools (deprecated)
 
 Due to the way the filesystem was rewritten, there is a need to use the utility from the folder tools/, it extracts sounds necessary for the game to work.
 
